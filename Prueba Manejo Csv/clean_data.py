@@ -4,6 +4,13 @@
 
 import pandas as pd
 import re
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import SnowballStemmer
+
+nltk.download('punkt')  # Descargar el tokenizer de NLTK
+nltk.download('stopwords')  # Descargar la lista de stopwords de NLTK
 
 def limpiar_caracteres(texto):
     if isinstance(texto, str):  # Verificar si es una cadena de texto
@@ -11,6 +18,25 @@ def limpiar_caracteres(texto):
         return texto_limpio.lower()
     else:
         return ''
+
+def tokenizar_texto(texto):
+    tokens = word_tokenize(texto)
+    return tokens
+
+def eliminar_stopwords(tokens):
+    stopwords_esp = set(stopwords.words('spanish'))
+    tokens_filtrados = [token for token in tokens if token.lower() not in stopwords_esp]
+    return tokens_filtrados
+
+def lematizar_tokens(tokens):
+    lemmatizer = nltk.stem.WordNetLemmatizer()
+    tokens_lemmatizados = [lemmatizer.lemmatize(token) for token in tokens]
+    return tokens_lemmatizados
+
+def stem_tokens(tokens):
+    stemmer = SnowballStemmer('spanish')
+    tokens_stemizados = [stemmer.stem(token) for token in tokens]
+    return tokens_stemizados
 
 def limpiar_datos():
     # Cargar el CSV
@@ -26,5 +52,10 @@ def limpiar_datos():
     # Aplicar la limpieza a la columna 'comentarios'
     df['comentarios'] = df['comentarios'].apply(limpiar_caracteres)
     
-    # Mostrar las primeras filas después de la limpieza
+    # Tokenizar, eliminar stopwords y lematizar los comentarios
+    df['comentarios'] = df['comentarios'].apply(tokenizar_texto)
+    df['comentarios'] = df['comentarios'].apply(eliminar_stopwords)
+    df['comentarios'] = df['comentarios'].apply(lematizar_tokens)  # Puedes usar lematización o stemming
+    
+    # Mostrar las primeras filas después de la limpieza y tokenización
     print(df.head())
