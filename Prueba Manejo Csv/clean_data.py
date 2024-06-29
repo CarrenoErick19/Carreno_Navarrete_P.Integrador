@@ -2,12 +2,15 @@
 
 # clean_data.py
 
+# clean_data.py
+
 import pandas as pd
 import re
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer
+from textblob import TextBlob  # Importar TextBlob para análisis de sentimientos
 
 nltk.download('punkt')  # Descargar el tokenizer de NLTK
 nltk.download('stopwords')  # Descargar la lista de stopwords de NLTK
@@ -33,10 +36,9 @@ def lematizar_tokens(tokens):
     tokens_lemmatizados = [lemmatizer.lemmatize(token) for token in tokens]
     return tokens_lemmatizados
 
-def stem_tokens(tokens):
-    stemmer = SnowballStemmer('spanish')
-    tokens_stemizados = [stemmer.stem(token) for token in tokens]
-    return tokens_stemizados
+def analizar_sentimiento(texto):
+    sentimiento = TextBlob(texto).sentiment.polarity
+    return sentimiento
 
 def limpiar_datos():
     # Cargar el CSV
@@ -55,7 +57,12 @@ def limpiar_datos():
     # Tokenizar, eliminar stopwords y lematizar los comentarios
     df['comentarios'] = df['comentarios'].apply(tokenizar_texto)
     df['comentarios'] = df['comentarios'].apply(eliminar_stopwords)
-    df['comentarios'] = df['comentarios'].apply(lematizar_tokens)  # Puedes usar lematización o stemming
+    df['comentarios'] = df['comentarios'].apply(lematizar_tokens)
     
-    # Mostrar las primeras filas después de la limpieza y tokenización
+    # Realizar análisis de sentimientos
+    df['sentimiento'] = df['comentarios'].apply(lambda x: analizar_sentimiento(' '.join(x)))
+    
+    # Mostrar las primeras filas después de la limpieza y análisis de sentimientos
     print(df.head())
+    
+    return df  # Devolver el DataFrame limpio con análisis de sentimientos
