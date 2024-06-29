@@ -27,6 +27,19 @@ def limpiar_texto(texto):
     return ' '.join(tokens)
 
 def preprocess_data(input_file, output_file):
-    df = pd.read_csv(input_file)
+    try:
+        df = pd.read_csv(input_file, quotechar='"', on_bad_lines='skip')
+    except pd.errors.ParserError as e:
+        print(f"Error al leer el archivo CSV: {e}")
+        return
+
+    # Asegurarse de que la columna de comentarios existe
+    if 'comentarios' not in df.columns:
+        print("Error: la columna 'comentarios' no se encuentra en el archivo CSV.")
+        return
+
+    # Limpiar la columna de comentarios
     df['texto_limpio'] = df['comentarios'].apply(limpiar_texto)
+    
+    # Guardar el archivo preprocesado
     df.to_csv(output_file, index=False)
