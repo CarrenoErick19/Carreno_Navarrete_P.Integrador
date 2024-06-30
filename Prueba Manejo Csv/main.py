@@ -1,7 +1,5 @@
-#1. Este archivo será el punto de entrada de tu proyecto y desde 
-# donde importarás las funciones necesarias de los otros archivos.
-
-# main.py
+# Este archivo será el punto de entrada del proyecto y desde 
+# donde se importaran las funciones necesarias de los otros archivos.
 
 from data.load_data import mostrar_datos_csv
 from data.clean_data import limpiar_datos

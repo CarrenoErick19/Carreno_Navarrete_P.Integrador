@@ -1,6 +1,4 @@
-# 3. Aquí colocarás el código para limpiar los datos, como se discutió anteriormente.
-
-# clean_data.py
+# El siguiente código se encarga de limpiar los datos.
 
 import pandas as pd
 import re

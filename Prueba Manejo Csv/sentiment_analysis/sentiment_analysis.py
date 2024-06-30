@@ -1,7 +1,5 @@
-#4. Vamos a crear un nuevo archivo llamado sentiment_analysis.py donde colocaremos las funciones relacionadas 
-# con el análisis de sentimientos y la visualización. 
-
-# sentiment_analysis.py
+#Este archivo almacena las funciones relacionadas con el análisis de sentimientos 
+# y su visualización. 
 
 import pandas as pd
 import matplotlib.pyplot as plt

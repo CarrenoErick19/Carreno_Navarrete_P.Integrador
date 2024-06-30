@@ -1,4 +1,4 @@
-#6. Crea un archivo train_rnn.py para construir y entrenar el modelo RNN.
+# Archivo encargado de construir y entrenar el modelo RNN.
 
 # train_rnn.py
 

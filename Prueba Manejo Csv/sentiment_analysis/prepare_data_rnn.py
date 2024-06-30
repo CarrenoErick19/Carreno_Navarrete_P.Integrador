@@ -1,7 +1,4 @@
-#5. Crea un nuevo archivo prepare_data_rnn.py para 
-# la preparación de datos específicos para el modelo RNN.
-
-# prepare_data_rnn.py
+# Archivo encargado de la preparación de datos específicos para el modelo RNN.
 
 import pandas as pd
 from tensorflow.keras.preprocessing.text import Tokenizer
@@ -21,7 +18,7 @@ def preparar_datos_para_rnn(df, max_num_words=10000, max_sequence_length=100):
 
 def predecir_sentimientos(model, word_index, nuevos_comentarios):
     tokenizer = Tokenizer(num_words=len(word_index))
-    tokenizer.word_index = word_index  # Set the word_index to the provided one
+    tokenizer.word_index = word_index  
     
     secuencias = tokenizer.texts_to_sequences(nuevos_comentarios)
     datos = pad_sequences(secuencias, maxlen=100)
