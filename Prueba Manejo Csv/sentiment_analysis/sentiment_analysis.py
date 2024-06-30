@@ -5,9 +5,9 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt
-from clean_data import limpiar_datos
-from prepare_data_rnn import preparar_datos_para_rnn, predecir_sentimientos
-from train_rnn import construir_entrenar_modelo_rnn
+from data.clean_data import limpiar_datos
+from sentiment_analysis.prepare_data_rnn import preparar_datos_para_rnn, predecir_sentimientos
+from sentiment_analysis.train_rnn import construir_entrenar_modelo_rnn
 from sklearn.preprocessing import LabelEncoder
 
 def visualizar_sentimientos(df):
