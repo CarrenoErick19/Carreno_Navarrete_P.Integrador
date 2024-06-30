@@ -10,4 +10,5 @@ def mostrar_datos_csv():
     
     # Mostrar las primeras filas para entender la estructura
     print(df.head())
+    return df
 

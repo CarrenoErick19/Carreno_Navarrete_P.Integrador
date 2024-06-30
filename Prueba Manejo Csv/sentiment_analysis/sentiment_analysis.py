@@ -11,6 +11,9 @@ from sentiment_analysis.train_rnn import construir_entrenar_modelo_rnn
 from sklearn.preprocessing import LabelEncoder
 
 def visualizar_sentimientos(df):
+    if 'sentimiento' not in df.columns:
+        raise ValueError("La columna 'sentimiento' no se encuentra en el DataFrame")
+        
     plt.figure(figsize=(10, 6))
     plt.hist(df['sentimiento'], bins=30, edgecolor='black')
     plt.title('Distribución de Sentimientos en los Comentarios')

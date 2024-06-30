@@ -11,7 +11,7 @@ from sentiment_analysis.train_rnn import construir_entrenar_modelo_rnn
 
 def main():
     # Mostrar datos del CSV
-    mostrar_datos_csv()
+    df = mostrar_datos_csv()
     
     # Limpiar datos
     df = limpiar_datos()
@@ -23,7 +23,7 @@ def main():
     data, word_index = preparar_datos_para_rnn(df)
 
     # Entrenar modelo RNN
-    model = construir_entrenar_modelo_rnn(data, df['sentimiento'])
+    model, history = construir_entrenar_modelo_rnn(data, df['sentimiento'])
     
     # Nuevos comentarios para prueba
     nuevos_comentarios = [
@@ -38,6 +38,4 @@ def main():
     print(f"Predicciones: {predicciones}")
 
 if __name__ == "__main__":
-    df = limpiar_datos()
-    visualizar_sentimientos(df)
-    realizar_analisis_sentimientos()
+    main()
