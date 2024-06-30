@@ -3,7 +3,6 @@
 
 # sentiment_analysis.py
 
-
 import pandas as pd
 import matplotlib.pyplot as plt
 from clean_data import limpiar_datos
@@ -31,7 +30,7 @@ def realizar_analisis_sentimientos():
     labels = df['sentimiento_binario'].values
     
     # Construir y entrenar el modelo RNN
-    model, history = construir_entrenar_modelo_rnn(data, labels)
+    model = construir_entrenar_modelo_rnn(data, labels)
     
     # Evaluar el modelo (opcional)
     loss, accuracy = model.evaluate(data, labels)

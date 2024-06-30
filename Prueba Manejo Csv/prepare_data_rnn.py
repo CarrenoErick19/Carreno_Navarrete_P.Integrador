@@ -17,9 +17,12 @@ def preparar_datos_para_rnn(df, max_num_words=10000, max_sequence_length=100):
     
     data = pad_sequences(sequences, maxlen=max_sequence_length)
     
-    return data, tokenizer.word_index
+    return data, word_index
 
-def predecir_sentimientos(model, tokenizer, nuevos_comentarios):
+def predecir_sentimientos(model, word_index, nuevos_comentarios):
+    tokenizer = Tokenizer(num_words=len(word_index))
+    tokenizer.word_index = word_index  # Set the word_index to the provided one
+    
     secuencias = tokenizer.texts_to_sequences(nuevos_comentarios)
     datos = pad_sequences(secuencias, maxlen=100)
     predicciones = model.predict(datos)

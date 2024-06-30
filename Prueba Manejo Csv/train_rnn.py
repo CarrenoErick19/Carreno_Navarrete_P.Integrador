@@ -26,4 +26,4 @@ def construir_entrenar_modelo_rnn(data, labels, max_num_words=10000, max_sequenc
                         epochs=10,
                         validation_data=(X_val, y_val))
     
-    return model, history
+    return model  # Solo retorna el modelo, no history
