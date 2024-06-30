@@ -6,7 +6,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from clean_data import limpiar_datos
-from prepare_data_rnn import preparar_datos_para_rnn
+from prepare_data_rnn import preparar_datos_para_rnn, predecir_sentimientos
 from train_rnn import construir_entrenar_modelo_rnn
 from sklearn.preprocessing import LabelEncoder
 
@@ -18,11 +18,42 @@ def visualizar_sentimientos(df):
     plt.ylabel('Número de Comentarios')
     plt.show()
 
+def plot_training_history(history):
+    # Plot training & validation accuracy values
+    plt.figure(figsize=(12, 6))
+
+    plt.subplot(1, 2, 1)
+    plt.plot(history.history['accuracy'])
+    plt.plot(history.history['val_accuracy'])
+    plt.title('Model accuracy')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Validation'], loc='upper left')
+
+    # Plot training & validation loss values
+    plt.subplot(1, 2, 2)
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('Model loss')
+    plt.ylabel('Loss')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Validation'], loc='upper left')
+
+    plt.show()
+
+def plot_predictions(predicciones, nuevos_comentarios):
+    plt.figure(figsize=(10, 6))
+    plt.bar(range(len(nuevos_comentarios)), predicciones.flatten())
+    plt.title('Predicciones de Sentimientos para Nuevos Comentarios')
+    plt.xlabel('Índice del Comentario')
+    plt.ylabel('Probabilidad de Sentimiento Positivo')
+    plt.show()
+
 def realizar_analisis_sentimientos():
     df = limpiar_datos()  # Obtener el DataFrame limpio con análisis de sentimientos
     
     # Preprocesar los datos para el modelo RNN
-    data, word_index = preparar_datos_para_rnn(df)
+    data, tokenizer = preparar_datos_para_rnn(df)
     
     # Crear etiquetas (sentimientos) basadas en la polaridad de TextBlob
     le = LabelEncoder()
@@ -30,11 +61,25 @@ def realizar_analisis_sentimientos():
     labels = df['sentimiento_binario'].values
     
     # Construir y entrenar el modelo RNN
-    model = construir_entrenar_modelo_rnn(data, labels)
+    model, history = construir_entrenar_modelo_rnn(data, labels)
     
     # Evaluar el modelo (opcional)
     loss, accuracy = model.evaluate(data, labels)
     print(f'Loss: {loss}, Accuracy: {accuracy}')
+    
+    # Visualizar curvas de entrenamiento
+    plot_training_history(history)
+
+    # Visualizar predicciones (suponiendo que tienes algunos nuevos comentarios)
+    nuevos_comentarios = [
+        "La salud debería ser gratuita.",
+        "Los hospitales públicos son buenos.",
+        "Privatizar la salud es peligroso.",
+        "Necesitamos mejor atención médica."
+    ]
+    predicciones = predecir_sentimientos(model, tokenizer, nuevos_comentarios)
+    print(f'Predicciones: {predicciones}')
+    plot_predictions(predicciones, nuevos_comentarios)
 
 def main():
     df = limpiar_datos()  # Obtener el DataFrame limpio con análisis de sentimientos

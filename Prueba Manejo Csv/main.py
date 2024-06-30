@@ -38,4 +38,6 @@ def main():
     print(f"Predicciones: {predicciones}")
 
 if __name__ == "__main__":
-    main()
+    df = limpiar_datos()
+    visualizar_sentimientos(df)
+    realizar_analisis_sentimientos()

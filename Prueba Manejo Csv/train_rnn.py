@@ -2,28 +2,29 @@
 
 # train_rnn.py
 
-import numpy as np
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Embedding, LSTM, Dense, Dropout
+from tensorflow.keras.layers import Embedding, LSTM, Dense
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
 
-def construir_entrenar_modelo_rnn(data, labels, max_num_words=10000, max_sequence_length=100, embedding_dim=100, lstm_units=128):
+def construir_entrenar_modelo_rnn(data, labels):
+    # Dividir los datos en entrenamiento y validación
+    x_train, x_val, y_train, y_val = train_test_split(data, labels, test_size=0.2, random_state=42)
+
+    # Definir el modelo
     model = Sequential()
-    model.add(Embedding(max_num_words, embedding_dim, input_length=max_sequence_length))
-    model.add(LSTM(lstm_units, dropout=0.2, recurrent_dropout=0.2))
-    model.add(Dense(1, activation='sigmoid'))
-    
-    model.compile(loss='binary_crossentropy',
-                  optimizer='adam',
-                  metrics=['accuracy'])
-    
-    print(model.summary())
-    
-    X_train, X_val, y_train, y_val = train_test_split(data, labels, test_size=0.2, random_state=42)
-    
-    history = model.fit(X_train, y_train,
-                        batch_size=32,
-                        epochs=10,
-                        validation_data=(X_val, y_val))
-    
-    return model  # Solo retorna el modelo, no history
+    model.add(Embedding(input_dim=10000, output_dim=64, input_length=data.shape[1]))
+    model.add(LSTM(units=64, return_sequences=False))
+    model.add(Dense(units=1, activation='sigmoid'))
+
+    # Compilar el modelo
+    model.compile(optimizer=Adam(learning_rate=0.001), loss='binary_crossentropy', metrics=['accuracy'])
+
+    # Definir callbacks
+    early_stopping = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
+
+    # Entrenar el modelo
+    history = model.fit(x_train, y_train, epochs=10, batch_size=32, validation_data=(x_val, y_val), callbacks=[early_stopping])
+
+    return model, history
