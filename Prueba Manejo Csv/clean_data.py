@@ -2,8 +2,6 @@
 
 # clean_data.py
 
-# clean_data.py
-
 import pandas as pd
 import re
 import nltk
@@ -52,15 +50,15 @@ def limpiar_datos():
     df['comentarios'] = df['comentarios'].fillna('')
     
     # Aplicar la limpieza a la columna 'comentarios'
-    df['comentarios'] = df['comentarios'].apply(limpiar_caracteres)
+    df['comentarios_limpios'] = df['comentarios'].apply(limpiar_caracteres)
     
     # Tokenizar, eliminar stopwords y lematizar los comentarios
-    df['comentarios'] = df['comentarios'].apply(tokenizar_texto)
-    df['comentarios'] = df['comentarios'].apply(eliminar_stopwords)
-    df['comentarios'] = df['comentarios'].apply(lematizar_tokens)
+    df['tokens'] = df['comentarios_limpios'].apply(tokenizar_texto)
+    df['tokens'] = df['tokens'].apply(eliminar_stopwords)
+    df['tokens'] = df['tokens'].apply(lematizar_tokens)
     
     # Realizar análisis de sentimientos
-    df['sentimiento'] = df['comentarios'].apply(lambda x: analizar_sentimiento(' '.join(x)))
+    df['sentimiento'] = df['tokens'].apply(lambda x: analizar_sentimiento(' '.join(x)))
     
     # Mostrar las primeras filas después de la limpieza y análisis de sentimientos
     print(df.head())
