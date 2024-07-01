@@ -10,16 +10,12 @@ from sentiment_analysis.train_rnn import construir_entrenar_modelo_rnn
 def main():
     # Mostrar datos del CSV
     df = mostrar_datos_csv()
-    
     # Limpiar datos
     df = limpiar_datos()
-
     # Realizar análisis de sentimientos y entrenar el modelo RNN
     realizar_analisis_sentimientos()
-    
     # Preparar datos para RNN
     data, word_index = preparar_datos_para_rnn(df)
-
     # Entrenar modelo RNN
     model, history = construir_entrenar_modelo_rnn(data, df['sentimiento'])
     

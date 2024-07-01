@@ -20,10 +20,12 @@ Este proyecto realiza un análisis de sentimientos en comentarios de usuarios ut
 pip install pandas matplotlib nltk textblob tensorflow scikit-learn
 
 4. Descargar recursos adicionales para 'nltk':
+Crear un archivo python y almacenar el siguiente codigo:
 
 import nltk
-nltk.download('punkt')
-nltk.download('stopwords')
+nltk.download('wordnet')
+
+Ejecutar y esperar a que se instale.
 
 ## Estructura del proyecto:
 
