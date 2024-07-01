@@ -1,7 +1,5 @@
 # Archivo encargado de construir y entrenar el modelo RNN.
 
-# train_rnn.py
-
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Embedding, LSTM, Dense
 from tensorflow.keras.optimizers import Adam

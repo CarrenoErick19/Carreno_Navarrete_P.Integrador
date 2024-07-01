@@ -34,7 +34,7 @@ def lematizar_tokens(tokens):
 
 def limpiar_datos():
     # Cargar el CSV
-    archivo_csv = r'C:\Users\PCarreño\Desktop\data_source\solca_comentarios.csv'
+    archivo_csv = r'C:\Users\Erick Carreño\Desktop\data_source\solca_comentarios.csv'
     df = pd.read_csv(archivo_csv, delimiter=',')
 
     # Renombrar la columna 'comentario' a 'comentarios'
@@ -49,7 +49,7 @@ def limpiar_datos():
     # Generar la columna 'sentimiento'
     df['sentimiento'] = df['comentarios_limpios'].apply(lambda x: TextBlob(x).sentiment.polarity)
     
-    # Mostrar las primeras líneas en una ventana gráfica (opcional)
+    # Mostrar las primeras líneas en una ventana gráfica
     mostrar_datos_graficos(df)
     
     return df
