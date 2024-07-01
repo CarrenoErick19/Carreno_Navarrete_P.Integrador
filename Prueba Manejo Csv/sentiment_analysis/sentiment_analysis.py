@@ -1,6 +1,8 @@
 #Este archivo almacena las funciones relacionadas con el análisis de sentimientos 
 # y su visualización. 
 
+# sentiment_analysis.py
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from data.clean_data import limpiar_datos
@@ -71,6 +73,9 @@ def realizar_analisis_sentimientos():
     # Visualizar curvas de entrenamiento
     plot_training_history(history)
 
+    # Visualizar sentimientos
+    visualizar_sentimientos(df)
+
     # Visualizar predicciones (suponiendo que tienes algunos nuevos comentarios)
     nuevos_comentarios = [
         "La salud debería ser gratuita.",
@@ -84,7 +89,6 @@ def realizar_analisis_sentimientos():
 
 def main():
     df = limpiar_datos()  # Obtener el DataFrame limpio con análisis de sentimientos
-    visualizar_sentimientos(df)
     realizar_analisis_sentimientos()
 
 if __name__ == "__main__":
