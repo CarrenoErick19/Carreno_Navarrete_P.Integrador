@@ -34,7 +34,7 @@ def lematizar_tokens(tokens):
 
 def limpiar_datos():
     # Cargar el CSV
-    archivo_csv = r'C:\Users\PCarreño\Desktop\data_source\solca_comentarios.csv'
+    archivo_csv = r'C:\Users\PCarreño\Desktop\data_source\comentarios_reddit.csv'
     df = pd.read_csv(archivo_csv, delimiter=',')
 
     # Renombrar la columna 'comentario' a 'comentarios'
