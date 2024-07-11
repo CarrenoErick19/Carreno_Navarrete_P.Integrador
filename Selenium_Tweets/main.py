@@ -5,7 +5,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import time
 
 # Ruta al chromedriver (ajusta la ruta según tu configuración)
@@ -40,7 +40,7 @@ time.sleep(5)
 
 # Buscar un término
 search_box = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@aria-label="Search query"]')))
-search_box.send_keys("Daniel Noboa")
+search_box.send_keys("Verdi Cevallos")
 search_box.send_keys(Keys.RETURN)
 
 # Esperar a que los resultados de la búsqueda carguen
@@ -53,30 +53,50 @@ latest_tab.click()
 # Aumentar el tiempo de espera para la carga de tweets
 try:
     wait.until(EC.presence_of_element_located((By.XPATH, '//article[@role="article"]')))
-    time.sleep(5)  # Esperar un poco más para asegurar que los tweets carguen completamente
-    # Recuperar los tweets
-    tweets = driver.find_elements(By.XPATH, '//article[@role="article"]')
     
-    if not tweets:
-        print("No se encontraron elementos de tweets después de la búsqueda.")
-    else:
-        # Extraer información de los primeros 5 tweets
-        tweet_data = []
-        for tweet in tweets[:5]:
+    tweet_data = []
+    scroll_pause_time = 2  # Tiempo de pausa entre desplazamientos
+    tweets_collected = 0
+    max_scroll_attempts = 50  # Limitar el número de intentos de desplazamiento
+    scroll_attempts = 0
+    
+    while tweets_collected < 100 and scroll_attempts < max_scroll_attempts:
+        try:
+            # Recuperar los tweets
+            tweets = driver.find_elements(By.XPATH, '//article[@role="article"]')
+            for tweet in tweets[tweets_collected:]:
+                try:
+                    content = tweet.find_element(By.XPATH, './/div[@lang]').text
+                    timestamp = tweet.find_element(By.XPATH, './/time').get_attribute("datetime")
+                    username = tweet.find_element(By.XPATH, './/span[contains(text(), "@")]').text
+                    tweet_data.append([username, timestamp, content])
+                    tweets_collected += 1
+                    if tweets_collected >= 100:
+                        break
+                except NoSuchElementException:
+                    continue
+            # Verificar si hay un mensaje de error en la página
             try:
-                content = tweet.find_element(By.XPATH, './/div[@lang]').text
-                timestamp = tweet.find_element(By.XPATH, './/time').get_attribute("datetime")
-                username = tweet.find_element(By.XPATH, './/span[contains(text(), "@")]').text
-                tweet_data.append([username, timestamp, content])
-            except Exception as e:
-                print(f"Error extrayendo información del tweet: {e}")
-        
-        # Guardar en un archivo CSV
-        with open("tweets.csv", mode="w", newline='', encoding="utf-8") as file:
-            writer = csv.writer(file)
-            writer.writerow(["Username", "Timestamp", "Content"])
-            writer.writerows(tweet_data)
-        print("Información de tweets guardada en tweets.csv")
+                error_message = driver.find_element(By.XPATH, '//*[contains(text(), "ha ocurrido un error")]')
+                if error_message:
+                    print("Se detectó un error en la página de Twitter. Terminando la ejecución.")
+                    break
+            except NoSuchElementException:
+                pass
+            # Desplazarse hacia abajo para cargar más tweets
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(scroll_pause_time)  # Esperar a que se carguen más tweets
+            scroll_attempts += 1
+        except Exception as e:
+            print(f"Error durante la carga de tweets: {e}")
+            break
+
+    # Guardar en un archivo CSV
+    with open("tweets.csv", mode="w", newline='', encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(["Username", "Timestamp", "Content"])
+        writer.writerows(tweet_data)
+    print("Información de tweets guardada en tweets.csv")
         
 except TimeoutException:
     print("Tiempo de espera agotado. No se encontraron elementos de tweets después de la búsqueda.")
