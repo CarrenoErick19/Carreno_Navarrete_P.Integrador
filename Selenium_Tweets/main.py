@@ -1,3 +1,4 @@
+import csv
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
@@ -5,7 +6,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-
 import time
 
 # Ruta al chromedriver (ajusta la ruta según tu configuración)
@@ -60,10 +60,23 @@ try:
     if not tweets:
         print("No se encontraron elementos de tweets después de la búsqueda.")
     else:
-        # Imprimir el texto de los primeros 5 tweets
+        # Extraer información de los primeros 5 tweets
+        tweet_data = []
         for tweet in tweets[:5]:
-            content = tweet.find_element(By.XPATH, './/div[@lang]').text
-            print(content)
+            try:
+                content = tweet.find_element(By.XPATH, './/div[@lang]').text
+                timestamp = tweet.find_element(By.XPATH, './/time').get_attribute("datetime")
+                username = tweet.find_element(By.XPATH, './/span[contains(text(), "@")]').text
+                tweet_data.append([username, timestamp, content])
+            except Exception as e:
+                print(f"Error extrayendo información del tweet: {e}")
+        
+        # Guardar en un archivo CSV
+        with open("tweets.csv", mode="w", newline='', encoding="utf-8") as file:
+            writer = csv.writer(file)
+            writer.writerow(["Username", "Timestamp", "Content"])
+            writer.writerows(tweet_data)
+        print("Información de tweets guardada en tweets.csv")
         
 except TimeoutException:
     print("Tiempo de espera agotado. No se encontraron elementos de tweets después de la búsqueda.")
