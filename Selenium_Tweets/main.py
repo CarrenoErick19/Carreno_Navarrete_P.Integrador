@@ -83,15 +83,13 @@ try:
         try:
             # Recuperar los tweets
             tweets = driver.find_elements(By.XPATH, '//article[@role="article"]')
-            for tweet in tweets[tweets_collected:]:
+            for tweet in tweets:
                 try:
                     content = tweet.find_element(By.XPATH, './/div[@lang]').text.replace("\n", " ")
                     timestamp = tweet.find_element(By.XPATH, './/time').get_attribute("datetime")
                     username = tweet.find_element(By.XPATH, './/span[contains(text(), "@")]').text
                     tweet_data.append([username, timestamp, content])
                     tweets_collected += 1
-                    if tweets_collected >= 200:
-                        break
                 except NoSuchElementException:
                     continue
             # Verificar si hay un mensaje de error en la página
