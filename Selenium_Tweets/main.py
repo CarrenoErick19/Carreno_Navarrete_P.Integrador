@@ -38,29 +38,41 @@ password.send_keys(Keys.RETURN)
 # Esperar a que el inicio de sesión complete
 time.sleep(5)
 
-# Buscar un término
-search_box = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@aria-label="Search query"]')))
-search_box.send_keys("Verdi Cevallos")  # MODIFICA EL TERMINO AQUI
-search_box.send_keys(Keys.RETURN)
+# Esperar a que la barra de búsqueda esté presente
+try:
+    search_box = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[data-testid="SearchBox_Search_Input"]')))
+    search_box.send_keys("Verdi Cevallos")  # MODIFICA EL TERMINO AQUI
+    search_box.send_keys(Keys.RETURN)
+except TimeoutException:
+    print("No se encontró la barra de búsqueda.")
+    driver.quit()
+    exit()
+except NoSuchElementException as e:
+    print(f"Error al encontrar el elemento de búsqueda: {e}")
+    driver.quit()
+    exit()
 
 # Esperar a que los resultados de la búsqueda carguen
-wait.until(EC.presence_of_element_located((By.XPATH, '//div[@data-testid="primaryColumn"]')))
-
-# Hacer clic en "Latest" para obtener los tweets más recientes
-latest_tab = wait.until(EC.presence_of_element_located((By.LINK_TEXT, "Latest")))
-latest_tab.click()
-
-# Aumentar el tiempo de espera para la carga de tweets
 try:
-    wait.until(EC.presence_of_element_located((By.XPATH, '//article[@role="article"]')))
-    
+    wait.until(EC.presence_of_element_located((By.XPATH, '//div[@data-testid="primaryColumn"]')))
+
+    # Hacer clic en "Latest" para obtener los tweets más recientes
+    try:
+        latest_tab = wait.until(EC.element_to_be_clickable((By.XPATH, '//a[contains(@href, "/search?q=Verdi%20Cevallos&f=live")]')))
+        latest_tab.click()
+    except TimeoutException:
+        print("No se encontró la pestaña 'Latest'.")
+        driver.quit()
+        exit()
+
+    # Aumentar el tiempo de espera para la carga de tweets
     tweet_data = []
     scroll_pause_time = 2  # Tiempo de pausa entre desplazamientos
     tweets_collected = 0
     max_scroll_attempts = 200  # Limitar el número de intentos de desplazamiento
     scroll_attempts = 0
     last_height = driver.execute_script("return document.body.scrollHeight")
-    # EN <200 SE ESPECIFICA EL LIMITE DE TWEETS, ESTA PUESTO PARA QUE SEAN 200
+
     while tweets_collected < 200 and scroll_attempts < max_scroll_attempts:
         try:
             # Recuperar los tweets
@@ -79,7 +91,7 @@ try:
             # Desplazarse hacia abajo para cargar más tweets
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(scroll_pause_time)  # Esperar a que se carguen más tweets
-            
+
             new_height = driver.execute_script("return document.body.scrollHeight")
             if new_height == last_height:
                 break
@@ -95,7 +107,7 @@ try:
         writer.writerow(["Username", "Timestamp", "Content"])
         writer.writerows(tweet_data)
     print("Información de tweets guardada en tweets.csv")
-        
+
 except TimeoutException:
     print("Tiempo de espera agotado. No se encontraron elementos de tweets después de la búsqueda.")
 
