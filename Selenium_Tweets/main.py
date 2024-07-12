@@ -1,5 +1,3 @@
-#FUNCIONAL PARA EXTRAER TWEETS SOBRE X TEMATICA
-
 import csv
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -10,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import time
 
-# AQUI COLOCA LA RUTA AL CHROMEDRIVER DONDE LO HAYAS GUARDADO
+# Ruta al chromedriver (ajusta la ruta según tu configuración)
 chromedriver_path = r"C:\Users\Erick Carreño\Downloads\chromedriver-win64\chromedriver-win64\chromedriver.exe"
 
 # Configuración del navegador
@@ -25,7 +23,7 @@ driver.get("https://x.com/i/flow/login")
 # Esperar a que la página cargue y el campo de nombre de usuario esté presente
 wait = WebDriverWait(driver, 30)
 username = wait.until(EC.presence_of_element_located((By.NAME, "text")))
-username.send_keys("erickcarre8@gmail.com") #COLOCA TU USUARIO AQUI
+username.send_keys("erickcarre8@gmail.com")
 username.send_keys(Keys.RETURN)
 
 # Esperar manualmente para resolver CAPTCHA u otras verificaciones
@@ -34,7 +32,7 @@ time.sleep(40)  # Tiempo suficiente para resolver manualmente (ajustar según se
 
 # Esperar a que la página de la contraseña cargue
 password = wait.until(EC.presence_of_element_located((By.NAME, "password")))
-password.send_keys("SMITEeslalei1") #TU CONTRASEÑA AQUI
+password.send_keys("SMITEeslalei1")
 password.send_keys(Keys.RETURN)
 
 # Esperar a que el inicio de sesión complete
@@ -42,7 +40,7 @@ time.sleep(5)
 
 # Buscar un término
 search_box = wait.until(EC.presence_of_element_located((By.XPATH, '//input[@aria-label="Search query"]')))
-search_box.send_keys("Verdi Cevallos") #MODIFICA EL TERMINO AQUI
+search_box.send_keys("Verdi Cevallos")
 search_box.send_keys(Keys.RETURN)
 
 # Esperar a que los resultados de la búsqueda carguen
@@ -62,14 +60,14 @@ try:
     max_scroll_attempts = 200  # Limitar el número de intentos de desplazamiento
     scroll_attempts = 0
     last_height = driver.execute_script("return document.body.scrollHeight")
-    # EN <200 SE ESPECIFICA EL LIMITE DE TWEETS, ESTA PUESTO PARA QUE SEAN 200
-    while tweets_collected < 200 and scroll_attempts < max_scroll_attempts:
+    
+    while tweets_collected < 100 and scroll_attempts < max_scroll_attempts:
         try:
             # Recuperar los tweets
             tweets = driver.find_elements(By.XPATH, '//article[@role="article"]')
             for tweet in tweets:
                 try:
-                    content = tweet.find_element(By.XPATH, './/div[@lang]').text.replace("\n", " ")
+                    content = tweet.find_element(By.XPATH, './/div[@lang]').text
                     timestamp = tweet.find_element(By.XPATH, './/time').get_attribute("datetime")
                     username = tweet.find_element(By.XPATH, './/span[contains(text(), "@")]').text
                     tweet_data.append([username, timestamp, content])

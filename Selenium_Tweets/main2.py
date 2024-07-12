@@ -67,7 +67,7 @@ try:
             tweets = driver.find_elements(By.XPATH, '//article[@role="article"]')
             for tweet in tweets:
                 try:
-                    content = tweet.find_element(By.XPATH, './/div[@lang]').text
+                    content = tweet.find_element(By.XPATH, './/div[@lang]').text.replace("\n", " ")
                     timestamp = tweet.find_element(By.XPATH, './/time').get_attribute("datetime")
                     username = tweet.find_element(By.XPATH, './/span[contains(text(), "@")]').text
                     tweet_data.append([username, timestamp, content])
