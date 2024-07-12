@@ -9,7 +9,7 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import time
 
 # Ruta al chromedriver (ajusta la ruta según tu configuración)
-chromedriver_path = r"C:\Users\PCarreño\Downloads\chromedriver-win64\chromedriver-win64\chromedriver.exe"
+chromedriver_path = r"C:\Users\Erick Carreño\Downloads\chromedriver-win64\chromedriver-win64\chromedriver.exe"
 
 # Configuración del navegador
 options = webdriver.ChromeOptions()
@@ -57,14 +57,15 @@ try:
     tweet_data = []
     scroll_pause_time = 2  # Tiempo de pausa entre desplazamientos
     tweets_collected = 0
-    max_scroll_attempts = 50  # Limitar el número de intentos de desplazamiento
+    max_scroll_attempts = 200  # Limitar el número de intentos de desplazamiento
     scroll_attempts = 0
+    last_height = driver.execute_script("return document.body.scrollHeight")
     
     while tweets_collected < 100 and scroll_attempts < max_scroll_attempts:
         try:
             # Recuperar los tweets
             tweets = driver.find_elements(By.XPATH, '//article[@role="article"]')
-            for tweet in tweets[tweets_collected:]:
+            for tweet in tweets:
                 try:
                     content = tweet.find_element(By.XPATH, './/div[@lang]').text
                     timestamp = tweet.find_element(By.XPATH, './/time').get_attribute("datetime")
@@ -75,17 +76,14 @@ try:
                         break
                 except NoSuchElementException:
                     continue
-            # Verificar si hay un mensaje de error en la página
-            try:
-                error_message = driver.find_element(By.XPATH, '//*[contains(text(), "ha ocurrido un error")]')
-                if error_message:
-                    print("Se detectó un error en la página de Twitter. Terminando la ejecución.")
-                    break
-            except NoSuchElementException:
-                pass
             # Desplazarse hacia abajo para cargar más tweets
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(scroll_pause_time)  # Esperar a que se carguen más tweets
+            
+            new_height = driver.execute_script("return document.body.scrollHeight")
+            if new_height == last_height:
+                break
+            last_height = new_height
             scroll_attempts += 1
         except Exception as e:
             print(f"Error durante la carga de tweets: {e}")
