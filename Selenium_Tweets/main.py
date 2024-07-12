@@ -1,4 +1,5 @@
 import csv
+import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
@@ -6,13 +7,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-import time
 
-<<<<<<< HEAD
-# AQUI COLOCA LA RUTA AL CHROMEDRIVER DONDE LO HAYAS GUARDADO
-=======
 # Ruta al chromedriver (ajusta la ruta según tu configuración)
->>>>>>> parent of 53fe9ff (recopilando mas de 200 tweets (desordenado))
 chromedriver_path = r"C:\Users\PCarreño\Downloads\chromedriver-win64\chromedriver-win64\chromedriver.exe"
 
 # Configuración del navegador
@@ -60,9 +56,15 @@ except NoSuchElementException as e:
 try:
     wait.until(EC.presence_of_element_located((By.XPATH, '//div[@data-testid="primaryColumn"]')))
 
+    # Intentar imprimir el HTML de la página actual para depurar
+    page_html = driver.page_source
+    with open("page_source.html", "w", encoding="utf-8") as file:
+        file.write(page_html)
+    print("HTML de la página guardado en 'page_source.html'")
+
     # Hacer clic en "Latest" para obtener los tweets más recientes
     try:
-        latest_tab = wait.until(EC.element_to_be_clickable((By.XPATH, '//a[contains(@href, "/search?q=Verdi%20Cevallos&f=live")]')))
+        latest_tab = wait.until(EC.element_to_be_clickable((By.XPATH, '//span[text()="Latest" or text()="Más reciente"]')))
         latest_tab.click()
     except TimeoutException:
         print("No se encontró la pestaña 'Latest'.")
@@ -75,14 +77,9 @@ try:
     tweets_collected = 0
     max_scroll_attempts = 50  # Limitar el número de intentos de desplazamiento
     scroll_attempts = 0
-<<<<<<< HEAD
     last_height = driver.execute_script("return document.body.scrollHeight")
 
     while tweets_collected < 200 and scroll_attempts < max_scroll_attempts:
-=======
-    
-    while tweets_collected < 100 and scroll_attempts < max_scroll_attempts:
->>>>>>> parent of 53fe9ff (recopilando mas de 200 tweets (desordenado))
         try:
             # Recuperar los tweets
             tweets = driver.find_elements(By.XPATH, '//article[@role="article"]')
@@ -108,14 +105,11 @@ try:
             # Desplazarse hacia abajo para cargar más tweets
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(scroll_pause_time)  # Esperar a que se carguen más tweets
-<<<<<<< HEAD
 
             new_height = driver.execute_script("return document.body.scrollHeight")
             if new_height == last_height:
                 break
             last_height = new_height
-=======
->>>>>>> parent of 53fe9ff (recopilando mas de 200 tweets (desordenado))
             scroll_attempts += 1
         except Exception as e:
             print(f"Error durante la carga de tweets: {e}")
