@@ -81,4 +81,3 @@ def mostrar_resultados(df, tfidf_matrix, feature_names):
     tree.pack(expand=True, fill='both')
     
     root.mainloop()
-
