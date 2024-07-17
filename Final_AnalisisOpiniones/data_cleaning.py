@@ -7,6 +7,7 @@ import pandas as pd
 import os
 import tkinter as tk
 from tkinter import ttk
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -48,26 +49,36 @@ def limpiar_datos(df):
     
     return df
 
-def mostrar_resultados(df):
+def vectorizar_texto(df):
+    tfidf_vectorizer = TfidfVectorizer()
+    tfidf_matrix = tfidf_vectorizer.fit_transform(df['comentarios_limpios'])
+    return tfidf_matrix, tfidf_vectorizer.get_feature_names_out()
+
+def mostrar_resultados(df, tfidf_matrix, feature_names):
     root = tk.Tk()
     root.title("Resultados de Limpieza de Datos")
 
     tree = ttk.Treeview(root)
-    tree["columns"] = ("comentarios", "comentarios_limpios", "tokens")
+    tree["columns"] = ("comentarios", "comentarios_limpios", "tokens", "tfidf")
 
     tree.column("#0", width=0, stretch=tk.NO)
-    tree.column("comentarios", anchor=tk.W, width=400)
-    tree.column("comentarios_limpios", anchor=tk.W, width=400)
-    tree.column("tokens", anchor=tk.W, width=400)
+    tree.column("comentarios", anchor=tk.W, width=200)
+    tree.column("comentarios_limpios", anchor=tk.W, width=200)
+    tree.column("tokens", anchor=tk.W, width=200)
+    tree.column("tfidf", anchor=tk.W, width=200)
 
     tree.heading("#0", text="", anchor=tk.W)
     tree.heading("comentarios", text="Comentarios Originales", anchor=tk.W)
     tree.heading("comentarios_limpios", text="Comentarios Limpios", anchor=tk.W)
     tree.heading("tokens", text="Tokens", anchor=tk.W)
+    tree.heading("tfidf", text="TF-IDF", anchor=tk.W)
 
     for index, row in df.iterrows():
-        tree.insert("", index, text="", values=(row["comentarios"], row["comentarios_limpios"], row["tokens"]))
+        tfidf_vector = tfidf_matrix[index].toarray().flatten()
+        tfidf_scores = {feature_names[i]: tfidf_vector[i] for i in range(len(feature_names)) if tfidf_vector[i] > 0}
+        tree.insert("", index, text="", values=(row["comentarios"], row["comentarios_limpios"], row["tokens"], str(tfidf_scores)))
 
     tree.pack(expand=True, fill='both')
     
     root.mainloop()
+
