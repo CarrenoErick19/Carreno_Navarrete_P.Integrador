@@ -19,10 +19,13 @@ if __name__ == "__main__":
         print("Limpiando datos...")
         df_limpio = limpiar_datos(df)
         
-        # Agregar una columna de 'sentimiento' para fines de ejemplo
-        # En una implementación real, esta columna debe ser creada según los datos específicos
-        df_limpio['sentimiento'] = df_limpio['comentarios'].apply(lambda x: 1 if 'bueno' in x else 0)
+        # Convertir las etiquetas de sentimiento a valores numéricos
+        df_limpio['sentimiento'] = df_limpio['comentarios'].apply(lambda x: 1 if 'bueno' in x else 0 if 'malo' in x else 2)
         
+        # Agregar una columna de 'aspecto' para fines de ejemplo
+        # En una implementación real, esta columna debe ser creada según los datos específicos
+        df_limpio['aspecto'] = df_limpio['comentarios'].apply(lambda x: 'features' if 'feature' in x else 'bugs' if 'bug' in x else 'other')
+
         print("Dividiendo datos en entrenamiento, validación y prueba...")
         train_df, val_df, test_df = dividir_datos(df_limpio)
         
@@ -56,7 +59,7 @@ if __name__ == "__main__":
         comparacion = comparar_resultados(nuevos_resultados)
         
         print("Mostrando gráficos de estadísticas...")
-        mostrar_graficos(emociones)
+        mostrar_graficos(df_limpio, emociones, temas)
         
         print("Vectorizando texto limpio para mostrar resultados...")
         tfidf_matrix, feature_names = vectorizar_texto(df_limpio)

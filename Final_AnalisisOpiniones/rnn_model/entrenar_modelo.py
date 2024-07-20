@@ -17,8 +17,8 @@ def entrenar_modelo_rnn(model, train_df, val_df, tokenizer, max_len=100, epochs=
     X_train = pad_sequences(X_train, maxlen=max_len)
     X_val = pad_sequences(X_val, maxlen=max_len)
     
-    y_train = train_df['sentimiento']
-    y_val = val_df['sentimiento']
+    y_train = train_df['sentimiento'].astype('float32')
+    y_val = val_df['sentimiento'].astype('float32')
     
     # Configurar Early Stopping
     early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
