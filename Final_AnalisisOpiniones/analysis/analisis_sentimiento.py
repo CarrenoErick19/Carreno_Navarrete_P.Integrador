@@ -1,27 +1,21 @@
-from textblob import TextBlob
+import pandas as pd
 
 def analizar_sentimientos(df):
-    emociones = {
-        'satisfaccion': [],
-        'insatisfaccion': [],
-        'enojo': [],
-        'alegria': [],
-        'tristeza': []
-    }
-
-    for comentario in df['comentarios_limpios']:
-        blob = TextBlob(comentario)
-        sentimiento = blob.sentiment.polarity
-        
-        if sentimiento > 0.5:
-            emociones['alegria'].append(comentario)
-        elif sentimiento > 0.1:
-            emociones['satisfaccion'].append(comentario)
-        elif sentimiento < -0.5:
-            emociones['enojo'].append(comentario)
-        elif sentimiento < -0.1:
-            emociones['tristeza'].append(comentario)
-        else:
-            emociones['insatisfaccion'].append(comentario)
+    # Asegurarse de que la columna 'comment_limpio' está presente
+    if 'comment_limpio' not in df.columns:
+        raise ValueError("La columna 'comment_limpio' no está presente en el DataFrame.")
     
+    emociones = {'satisfacción': [], 'insatisfacción': [], 'enojo': [], 'alegría': [], 'tristeza': []}
+    for index, row in df.iterrows():
+        texto = row['comment_limpio']
+        if 'satisfacción' in texto:
+            emociones['satisfacción'].append(texto)
+        elif 'insatisfacción' in texto:
+            emociones['insatisfacción'].append(texto)
+        elif 'enojo' in texto:
+            emociones['enojo'].append(texto)
+        elif 'alegría' in texto:
+            emociones['alegría'].append(texto)
+        elif 'tristeza' in texto:
+            emociones['tristeza'].append(texto)
     return emociones

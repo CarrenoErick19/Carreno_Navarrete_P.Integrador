@@ -8,7 +8,7 @@ def evaluar_modelo(model, test_df, tokenizer, max_len=100):
         
         print("Vectorizando datos de prueba...")
         # Vectorización
-        X_test = tokenizer.texts_to_sequences(test_df['comentarios_limpios'])
+        X_test = tokenizer.texts_to_sequences(test_df['comment_limpio'])
         X_test = pad_sequences(X_test, maxlen=max_len)
         
         y_test = test_df['sentimiento']

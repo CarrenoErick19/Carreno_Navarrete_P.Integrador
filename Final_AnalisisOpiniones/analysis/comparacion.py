@@ -1,37 +1,40 @@
 import json
 import os
+import numpy as np
 
-def guardar_resultados(resultados, file_path='resultados/resultados_actuales.json'):
-    print(f"Guardando resultados en {file_path}...")
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-    with open(file_path, 'w') as f:
-        json.dump(resultados, f)
-    print(f"Resultados guardados en {file_path}.")
-
-def cargar_resultados(file_path='resultados/resultados_actuales.json'):
-    print(f"Cargando resultados de {file_path}...")
-    if os.path.exists(file_path):
-        with open(file_path, 'r') as f:
-            resultados = json.load(f)
-        print(f"Resultados cargados de {file_path}.")
-        return resultados
-    else:
-        print(f"No se encontraron resultados anteriores en {file_path}.")
-        return None
-
-def comparar_resultados(nuevos_resultados, file_path='resultados/resultados_actuales.json'):
-    resultados_anteriores = cargar_resultados(file_path)
+def comparar_resultados(nuevos_resultados):
+    resultados_path = 'resultados/resultados_actuales.json'
     
-    if resultados_anteriores:
-        comparacion = {
-            'nuevos_resultados': nuevos_resultados,
-            'resultados_anteriores': resultados_anteriores
-        }
+    # Asegurarse de que el archivo de resultados existe y es válido
+    if os.path.exists(resultados_path):
+        try:
+            with open(resultados_path, 'r') as file:
+                resultados_anteriores = json.load(file)
+        except json.JSONDecodeError as e:
+            print(f"Error al leer el archivo JSON: {e}")
+            resultados_anteriores = {}
     else:
-        comparacion = {
-            'nuevos_resultados': nuevos_resultados,
-            'resultados_anteriores': 'No hay resultados anteriores para comparar.'
-        }
+        resultados_anteriores = {}
     
-    guardar_resultados(nuevos_resultados, file_path)
-    return comparacion
+    # Asegurarse de que los resultados nuevos sean serializables
+    resultados_comparacion = {
+        'emociones_anteriores': resultados_anteriores.get('emociones', {}),
+        'emociones_nuevos': {key: list(value) if isinstance(value, np.ndarray) else value for key, value in nuevos_resultados.get('emociones', {}).items()},
+        'temas_anteriores': resultados_anteriores.get('temas', []),
+        'temas_nuevos': [list(topic) for topic in nuevos_resultados.get('temas', [])]
+    }
+    
+    # Convertir nuevos_resultados a un formato serializable
+    serializable_resultados = {
+        'emociones': {key: list(value) if isinstance(value, np.ndarray) else value for key, value in nuevos_resultados.get('emociones', {}).items()},
+        'temas': [list(topic) for topic in nuevos_resultados.get('temas', [])]
+    }
+    
+    # Guardar los nuevos resultados en el archivo JSON
+    try:
+        with open(resultados_path, 'w') as file:
+            json.dump(serializable_resultados, file)
+    except TypeError as e:
+        print(f"Error al escribir el archivo JSON: {e}")
+    
+    return resultados_comparacion

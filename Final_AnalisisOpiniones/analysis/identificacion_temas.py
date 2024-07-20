@@ -1,16 +1,16 @@
+import pandas as pd
 from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.feature_extraction.text import CountVectorizer
-import pandas as pd
 
-def identificar_temas(df, num_temas=5):
-    vectorizer = CountVectorizer(max_df=0.95, min_df=2, stop_words='english')
-    dtm = vectorizer.fit_transform(df['comentarios_limpios'])
+def identificar_temas(df):
+    if 'comment_limpio' not in df.columns:
+        raise ValueError("La columna 'comment_limpio' no está presente en el DataFrame.")
     
-    lda = LatentDirichletAllocation(n_components=num_temas, random_state=42)
-    lda.fit(dtm)
-    
-    temas = {}
-    for index, topic in enumerate(lda.components_):
-        temas[f'Tema {index + 1}'] = [vectorizer.get_feature_names_out()[i] for i in topic.argsort()[-10:]]
-    
-    return temas
+    count_vectorizer = CountVectorizer(max_df=0.95, min_df=2, stop_words='english')
+    count_data = count_vectorizer.fit_transform(df['comment_limpio'])
+
+    lda = LatentDirichletAllocation(n_components=5, random_state=0)
+    lda.fit(count_data)
+
+    return lda, count_vectorizer
+
