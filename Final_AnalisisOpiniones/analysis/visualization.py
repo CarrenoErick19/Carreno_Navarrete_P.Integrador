@@ -1,21 +1,19 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
 
 def mostrar_graficos(df, emociones, temas):
+    # Verificar y llenar NaNs en 'sentimiento' y 'aspecto'
+    df['sentimiento'] = df['sentimiento'].fillna(0)
+    df['aspecto'] = df['aspecto'].fillna('otros')
+
     # Conteo de sentimientos por aspecto
     aspectos = df['aspecto'].unique()
     conteo_sentimientos = {
-        'negative': df[df['sentimiento'] == 0]['aspecto'].value_counts(),
-        'neutral': df[df['sentimiento'] == 2]['aspecto'].value_counts(),
-        'positive': df[df['sentimiento'] == 1]['aspecto'].value_counts()
+        'negative': df[df['sentimiento'] < 0]['aspecto'].value_counts().reindex(aspectos, fill_value=0),
+        'neutral': df[df['sentimiento'] == 0]['aspecto'].value_counts().reindex(aspectos, fill_value=0),
+        'positive': df[df['sentimiento'] > 0]['aspecto'].value_counts().reindex(aspectos, fill_value=0)
     }
-    
-    # Llenar NaN con 0 en conteo_sentimientos
-    for key in conteo_sentimientos:
-        conteo_sentimientos[key] = conteo_sentimientos[key].reindex(aspectos).fillna(0)
-        print(f"Conteo de {key} después de reindexar y llenar NaN:\n{conteo_sentimientos[key]}")
-    
+
     # Crear gráfico de barras para conteo de sentimientos por aspecto
     fig, axes = plt.subplots(2, 2, figsize=(15, 10))
     ax1, ax2, ax3, ax4 = axes.flatten()
@@ -39,44 +37,23 @@ def mostrar_graficos(df, emociones, temas):
     ax2.set_ylabel('Count')
 
     # Crear gráfico de dispersión para menciones positivas vs negativas por aspecto
-    positivos = df[df['sentimiento'] == 1]['aspecto'].value_counts()
-    negativos = df[df['sentimiento'] == 0]['aspecto'].value_counts()
-    
-    # Asegurarse de que los datos no contienen NaN
-    positivos = positivos.reindex(aspectos).fillna(0)
-    negativos = negativos.reindex(aspectos).fillna(0)
-    
-    print(f"Positivos:\n{positivos}")
-    print(f"Negativos:\n{negativos}")
-
-    if not positivos.empty and not negativos.empty and (positivos.sum() > 0 or negativos.sum() > 0):
-        ax3.scatter(negativos, positivos)
-        for i, aspecto in enumerate(positivos.index):
-            ax3.annotate(aspecto, (negativos[i], positivos[i]))
-        ax3.set_title('Positive VS Negative mentions per aspect')
-        ax3.set_xlabel('Negative mentions')
-        ax3.set_ylabel('Positive mentions')
-    else:
-        ax3.text(0.5, 0.5, 'No data available for scatter plot', horizontalalignment='center', verticalalignment='center')
-        ax3.set_title('Positive VS Negative mentions per aspect')
-        ax3.set_xlabel('Negative mentions')
-        ax3.set_ylabel('Positive mentions')
+    positivos = df[df['sentimiento'] > 0]['aspecto'].value_counts().reindex(aspectos, fill_value=0)
+    negativos = df[df['sentimiento'] < 0]['aspecto'].value_counts().reindex(aspectos, fill_value=0)
+    ax3.scatter(negativos, positivos)
+    for i, aspecto in enumerate(positivos.index):
+        ax3.annotate(aspecto, (negativos[i], positivos[i]))
+    ax3.set_title('Positive VS Negative mentions per aspect')
+    ax3.set_xlabel('Negative mentions')
+    ax3.set_ylabel('Positive mentions')
 
     # Gráfico de pastel para la distribución de emociones
-    labels = emociones.keys()
+    labels = list(emociones.keys())
     sizes = [len(emociones[emoción]) for emoción in emociones]
-    
-    # Asegurarse de que los tamaños no contienen NaN
-    sizes = [size if not np.isnan(size) else 0 for size in sizes]
-    print(f"Sizes para gráfico de pastel:\n{sizes}")
-
-    if sum(sizes) > 0:
-        ax4.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
-        ax4.axis('equal')
-        ax4.set_title('Distribution of Emotions')
-    else:
-        ax4.text(0.5, 0.5, 'No data available for pie chart', horizontalalignment='center', verticalalignment='center')
-        ax4.set_title('Distribution of Emotions')
+    if sum(sizes) == 0:
+        sizes = [1 for _ in sizes]  # Evitar NaNs si todos los tamaños son cero
+    ax4.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
+    ax4.axis('equal')
+    ax4.set_title('Distribution of Emotions')
 
     plt.tight_layout()
     plt.show()
