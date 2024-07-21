@@ -8,6 +8,7 @@ from analysis.analisis_sentimiento import analizar_sentimientos
 from rnn_model.definir_modelo import definir_modelo_rnn
 from rnn_model.evaluar_modelo import evaluar_modelo_rnn
 from analysis.visualization import generar_visualizaciones
+from rnn_model.entrenar_modelo import entrenar_y_guardar_modelo_rnn
 
 # Cargar datos
 print("Cargando datos...")
@@ -88,30 +89,9 @@ y_test = test_df['sentimiento'].values  # Etiquetas de prueba
 print("Definiendo el modelo...")
 model = definir_modelo_rnn(vocab_size=5000, max_len=max_len)
 
-# Implementar Early Stopping
-early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
-
-# Entrenar el modelo con una barra de progreso
+# Entrenar el modelo, guardar el modelo y el tokenizer
 print("Entrenando el modelo...")
-epochs = 100  # Se requieren 500 epochs
-batch_size = 128  # Aumentado para mejorar la velocidad
-
-with tqdm(total=epochs, desc="Training Model") as pbar:
-    for epoch in range(epochs):
-        history = model.fit(X_train, y_train, epochs=1, batch_size=batch_size, validation_data=(X_val, y_val), verbose=0)
-        pbar.update(1)
-        pbar.set_postfix(loss=history.history['loss'][-1], accuracy=history.history['accuracy'][-1], val_loss=history.history['val_loss'][-1], val_accuracy=history.history['val_accuracy'][-1])
-        if early_stopping.stopped_epoch > 0:
-            print(f"Early stopping at epoch {epoch+1}")
-            break
-
-# Guardar el modelo y el tokenizer
-print("Guardando el modelo y el tokenizer...")
-model.save('modelo_rnn.keras')
-with open('tokenizer.pickle', 'wb') as handle:
-    pickle.dump(tokenizer, handle)
-print("Modelo guardado en modelo_rnn.keras.")
-print("Tokenizer guardado en tokenizer.pickle.")
+entrenar_y_guardar_modelo_rnn(model, X_train, y_train, X_val, y_val, tokenizer, epochs=100, batch_size=128)
 
 # Evaluar el modelo
 print("Evaluando el modelo...")
