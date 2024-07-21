@@ -3,7 +3,7 @@ import tensorflow as tf
 from tqdm import tqdm
 import numpy as np
 import pickle
-from data.data_cleaning import limpiar_datos
+from data.data_cleaning import limpiar_datos, vectorizar_texto, mostrar_resultados
 from analysis.analisis_sentimiento import analizar_sentimientos
 from rnn_model.definir_modelo import definir_modelo_rnn
 from rnn_model.evaluar_modelo import evaluar_modelo_rnn
@@ -21,6 +21,12 @@ print("Limpiando datos...")
 df = limpiar_datos(df)
 print(f"Columnas disponibles después de limpiar los datos: {df.columns}")
 print(df.head(10))
+
+# Vectorizar texto y mostrar resultados
+print("Vectorizando texto...")
+tfidf_matrix, feature_names = vectorizar_texto(df)
+print("Mostrando resultados de limpieza de datos...")
+mostrar_resultados(df, tfidf_matrix, feature_names)
 
 # Análisis de sentimientos
 print("Análisis de sentimientos...")
