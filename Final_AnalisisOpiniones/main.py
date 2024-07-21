@@ -93,7 +93,7 @@ early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5
 
 # Entrenar el modelo con una barra de progreso
 print("Entrenando el modelo...")
-epochs = 500  # Se requieren 500 epochs
+epochs = 100  # Se requieren 500 epochs
 batch_size = 128  # Aumentado para mejorar la velocidad
 
 with tqdm(total=epochs, desc="Training Model") as pbar:
@@ -115,9 +115,11 @@ print("Tokenizer guardado en tokenizer.pickle.")
 
 # Evaluar el modelo
 print("Evaluando el modelo...")
-evaluar_modelo_rnn(model, test_df, tokenizer)
+cr, cm = evaluar_modelo_rnn(model, test_df, tokenizer)
 
 # Generar visualizaciones
 print("Generando visualizaciones...")
-generar_visualizaciones(df)
+y_pred = model.predict(X_test)
+y_pred_classes = np.argmax(y_pred, axis=1)
+generar_visualizaciones(df, y_test, y_pred_classes, ['alegría', 'enojo', 'tristeza', 'satisfacción', 'insatisfacción'])
 print("Visualizaciones generadas.")

@@ -1,8 +1,16 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+from sklearn.metrics import confusion_matrix, classification_report
 
-def generar_visualizaciones(df):
+def generar_matriz_confusion(y_true, y_pred, labels, ax):
+    cm = confusion_matrix(y_true, y_pred)
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=labels, yticklabels=labels, ax=ax)
+    ax.set_xlabel('Predicted')
+    ax.set_ylabel('True')
+    ax.set_title('Confusion Matrix')
+
+def generar_visualizaciones(df, y_true, y_pred, labels):
     # Mapeo de los sentimientos para etiquetas comprensibles
     sentimiento_map = {0: 'alegría', 1: 'enojo', 2: 'tristeza', 3: 'satisfacción', 4: 'insatisfacción'}
     df['sentimiento_label'] = df['sentimiento'].map(sentimiento_map)
@@ -31,17 +39,8 @@ def generar_visualizaciones(df):
         axes[1, 0].set_xlabel('Aspectos')
         axes[1, 0].set_ylabel('Conteo')
 
-    # Análisis de emociones (si existe)
-    if 'emociones' in df.columns:
-        emociones_df = pd.DataFrame(df['emociones'].tolist())
-        emociones_df = emociones_df.apply(pd.Series.value_counts).fillna(0)
-        emociones_df.plot(kind='bar', stacked=True, ax=axes[1, 1])
-        axes[1, 1].set_title('Distribución de Emociones')
-        axes[1, 1].set_xlabel('Emociones')
-        axes[1, 1].set_ylabel('Conteo')
-    else:
-        axes[1, 1].axis('off')
-        axes[1, 1].text(0.5, 0.5, 'La columna "emociones" no está presente en el DataFrame.', ha='center', va='center', fontsize=12)
+    # Matriz de confusión
+    generar_matriz_confusion(y_true, y_pred, labels, axes[1, 1])
 
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.show()
