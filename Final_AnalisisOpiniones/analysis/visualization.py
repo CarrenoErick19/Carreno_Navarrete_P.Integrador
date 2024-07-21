@@ -20,6 +20,15 @@ def generar_visualizaciones(df):
     plt.ylabel('Número de Comentarios')
     plt.show()
 
+    # Análisis de temas y aspectos
+    if 'aspecto' in df.columns:
+        plt.figure(figsize=(10, 6))
+        sns.countplot(x='aspecto', data=df, palette='coolwarm')
+        plt.title('Distribución de Aspectos')
+        plt.xlabel('Aspectos')
+        plt.ylabel('Conteo')
+        plt.show()
+
     # Si la columna 'emociones' no existe, no hacer nada más
     if 'emociones' not in df.columns:
         print("La columna 'emociones' no está presente en el DataFrame.")
