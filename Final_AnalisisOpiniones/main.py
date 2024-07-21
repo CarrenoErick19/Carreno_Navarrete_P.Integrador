@@ -2,8 +2,6 @@ import pandas as pd
 from data.data_cleaning import limpiar_datos
 from data.data_split import dividir_datos
 from analysis.analisis_sentimiento import analizar_sentimientos
-from analysis.identificacion_temas import identificar_temas
-from analysis.comparacion import comparar_aspectos
 from analysis.visualization import generar_visualizaciones
 from rnn_model.definir_modelo import definir_modelo_rnn
 from rnn_model.entrenar_modelo import entrenar_modelo_rnn

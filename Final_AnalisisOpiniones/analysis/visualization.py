@@ -3,9 +3,13 @@ import seaborn as sns
 import pandas as pd
 
 def generar_visualizaciones(df):
+    # Mapeo de los sentimientos para etiquetas comprensibles
+    sentimiento_map = {0: 'alegría', 1: 'enojo', 2: 'tristeza', 3: 'satisfacción', 4: 'insatisfacción'}
+    df['sentimiento_label'] = df['sentimiento'].map(sentimiento_map)
+
     # Conteo de sentimientos
     plt.figure(figsize=(10, 6))
-    sns.countplot(x='sentimiento', data=df, palette='viridis')
+    sns.countplot(x='sentimiento_label', data=df, palette='viridis')
     plt.title('Distribución de Sentimientos')
     plt.xlabel('Sentimientos')
     plt.ylabel('Conteo')
