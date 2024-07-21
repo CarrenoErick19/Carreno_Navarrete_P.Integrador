@@ -1,59 +1,37 @@
 import matplotlib.pyplot as plt
+import seaborn as sns
 import pandas as pd
 
-def mostrar_graficos(df, emociones, temas):
-    # Verificar y llenar NaNs en 'sentimiento' y 'aspecto'
-    df['sentimiento'] = df['sentimiento'].fillna(0)
-    df['aspecto'] = df['aspecto'].fillna('otros')
+def generar_visualizaciones(df):
+    # Conteo de sentimientos
+    plt.figure(figsize=(10, 6))
+    sns.countplot(x='sentimiento', data=df, palette='viridis')
+    plt.title('Distribución de Sentimientos')
+    plt.xlabel('Sentimientos')
+    plt.ylabel('Conteo')
+    plt.show()
 
-    # Conteo de sentimientos por aspecto
-    aspectos = df['aspecto'].unique()
-    conteo_sentimientos = {
-        'negative': df[df['sentimiento'] < 0]['aspecto'].value_counts().reindex(aspectos, fill_value=0),
-        'neutral': df[df['sentimiento'] == 0]['aspecto'].value_counts().reindex(aspectos, fill_value=0),
-        'positive': df[df['sentimiento'] > 0]['aspecto'].value_counts().reindex(aspectos, fill_value=0)
-    }
+    # Evolución temporal de los sentimientos
+    df['timestamp'] = pd.to_datetime(df['timestamp'])
+    plt.figure(figsize=(14, 7))
+    df.resample('M', on='timestamp').size().plot(legend=False)
+    plt.title('Número de Comentarios por Mes')
+    plt.xlabel('Fecha')
+    plt.ylabel('Número de Comentarios')
+    plt.show()
 
-    # Crear gráfico de barras para conteo de sentimientos por aspecto
-    fig, axes = plt.subplots(2, 2, figsize=(15, 10))
-    ax1, ax2, ax3, ax4 = axes.flatten()
+    # Si la columna 'emociones' no existe, no hacer nada más
+    if 'emociones' not in df.columns:
+        print("La columna 'emociones' no está presente en el DataFrame.")
+        return
 
-    ax1.bar(aspectos, conteo_sentimientos['negative'], label='Negative', color='red')
-    ax1.bar(aspectos, conteo_sentimientos['neutral'], label='Neutral', color='grey', bottom=conteo_sentimientos['negative'])
-    ax1.bar(aspectos, conteo_sentimientos['positive'], label='Positive', color='green', bottom=conteo_sentimientos['negative'] + conteo_sentimientos['neutral'])
-    ax1.set_title('Sentiment Counts by Aspect')
-    ax1.set_xlabel('Aspect')
-    ax1.set_ylabel('Count')
-    ax1.legend()
+    # Analizar y visualizar las emociones
+    emociones_df = pd.DataFrame(df['emociones'].tolist())
+    emociones_df = emociones_df.apply(pd.Series.value_counts).fillna(0)
 
-    # Crear gráfico de burbujas para conteo total por aspecto
-    conteo_aspectos = df['aspecto'].value_counts()
-    sizes = conteo_aspectos * 100
-    ax2.scatter(conteo_aspectos.index, conteo_aspectos.values, s=sizes, alpha=0.5)
-    for i, txt in enumerate(conteo_aspectos.index):
-        ax2.annotate(txt, (conteo_aspectos.index[i], conteo_aspectos.values[i]))
-    ax2.set_title('Counts by Aspect')
-    ax2.set_xlabel('Aspect')
-    ax2.set_ylabel('Count')
-
-    # Crear gráfico de dispersión para menciones positivas vs negativas por aspecto
-    positivos = df[df['sentimiento'] > 0]['aspecto'].value_counts().reindex(aspectos, fill_value=0)
-    negativos = df[df['sentimiento'] < 0]['aspecto'].value_counts().reindex(aspectos, fill_value=0)
-    ax3.scatter(negativos, positivos)
-    for i, aspecto in enumerate(positivos.index):
-        ax3.annotate(aspecto, (negativos[i], positivos[i]))
-    ax3.set_title('Positive VS Negative mentions per aspect')
-    ax3.set_xlabel('Negative mentions')
-    ax3.set_ylabel('Positive mentions')
-
-    # Gráfico de pastel para la distribución de emociones
-    labels = list(emociones.keys())
-    sizes = [len(emociones[emoción]) for emoción in emociones]
-    if sum(sizes) == 0:
-        sizes = [1 for _ in sizes]  # Evitar NaNs si todos los tamaños son cero
-    ax4.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
-    ax4.axis('equal')
-    ax4.set_title('Distribution of Emotions')
-
-    plt.tight_layout()
+    plt.figure(figsize=(12, 6))
+    emociones_df.plot(kind='bar', stacked=True)
+    plt.title('Distribución de Emociones')
+    plt.xlabel('Emociones')
+    plt.ylabel('Conteo')
     plt.show()

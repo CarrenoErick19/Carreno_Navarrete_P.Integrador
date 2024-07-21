@@ -1,38 +1,44 @@
 import pandas as pd
+from textblob import TextBlob
 
 def analizar_sentimientos(df):
-    # Asegurarse de que la columna 'comment_limpio' está presente
-    if 'comment_limpio' not in df.columns:
-        raise ValueError("La columna 'comment_limpio' no está presente en el DataFrame.")
-    
-    emociones = {'satisfacción': [], 'insatisfacción': [], 'enojo': [], 'alegría': [], 'tristeza': []}
-    df['aspecto'] = 'general'  # Asignar un valor por defecto a la columna 'aspecto'
-    df['sentimiento'] = 0  # Crear columna 'sentimiento' y asignar valor por defecto
-    
+    sentimientos = {'alegría': 0, 'enojo': 1, 'tristeza': 2, 'satisfacción': 3, 'insatisfacción': 4}
+    emociones = {'alegría': [], 'enojo': [], 'tristeza': [], 'satisfacción': [], 'insatisfacción': []}
+
+    aspectos = []
+    sentim = []
+
     for index, row in df.iterrows():
-        texto = row['comment_limpio']
-        if 'satisfacción' in texto:
-            emociones['satisfacción'].append(texto)
-            df.at[index, 'sentimiento'] = 1  # Ejemplo de asignación de sentimiento positivo
-        elif 'insatisfacción' in texto:
-            emociones['insatisfacción'].append(texto)
-            df.at[index, 'sentimiento'] = -1  # Ejemplo de asignación de sentimiento negativo
-        elif 'enojo' in texto:
-            emociones['enojo'].append(texto)
-            df.at[index, 'sentimiento'] = -1  # Ejemplo de asignación de sentimiento negativo
-        elif 'alegría' in texto:
-            emociones['alegría'].append(texto)
-            df.at[index, 'sentimiento'] = 1  # Ejemplo de asignación de sentimiento positivo
-        elif 'tristeza' in texto:
-            emociones['tristeza'].append(texto)
-            df.at[index, 'sentimiento'] = -1  # Ejemplo de asignación de sentimiento negativo
-        
-        # Asignar el aspecto basado en alguna lógica, por ejemplo, palabras clave
-        if 'servicio' in texto:
-            df.at[index, 'aspecto'] = 'servicio'
-        elif 'precio' in texto:
-            df.at[index, 'aspecto'] = 'precio'
-        elif 'calidad' in texto:
-            df.at[index, 'aspecto'] = 'calidad'
+        comentario = row['comment_limpio']
+        analisis = TextBlob(comentario)
+
+        if analisis.sentiment.polarity > 0.5:
+            emociones['alegría'].append(comentario)
+            aspectos.append('positivo')
+            sentim.append('alegría')
+        elif analisis.sentiment.polarity > 0.1:
+            emociones['satisfacción'].append(comentario)
+            aspectos.append('positivo')
+            sentim.append('satisfacción')
+        elif analisis.sentiment.polarity < -0.5:
+            emociones['enojo'].append(comentario)
+            aspectos.append('negativo')
+            sentim.append('enojo')
+        elif analisis.sentiment.polarity < -0.1:
+            emociones['tristeza'].append(comentario)
+            aspectos.append('negativo')
+            sentim.append('tristeza')
+        else:
+            emociones['insatisfacción'].append(comentario)
+            aspectos.append('neutral')
+            sentim.append('insatisfacción')
+
+    df['aspecto'] = aspectos
+    df['sentimiento'] = sentim
+
+    df['sentimiento'] = df['sentimiento'].map(sentimientos)
+
+    if not any(emociones.values()):
+        raise ValueError("No se encontraron comentarios con emociones reconocidas.")
     
     return df, emociones
