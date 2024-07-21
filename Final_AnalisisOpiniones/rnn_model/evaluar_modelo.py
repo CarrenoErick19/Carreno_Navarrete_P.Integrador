@@ -1,51 +1,36 @@
 import numpy as np
-from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix, classification_report
 import seaborn as sns
-import pandas as pd
 import tensorflow as tf
 
-def evaluar_modelo(model, test_df, tokenizer, max_len=100):
-    # Vectorización
-    X_test = tokenizer.texts_to_sequences(test_df['comment_limpio'])
-    X_test = tf.keras.preprocessing.sequence.pad_sequences(X_test, maxlen=max_len)
-    y_test = test_df['sentimiento']
+def evaluar_modelo_rnn(model, test_df, tokenizer):
+    # Convertir los datos de prueba en secuencias
+    X_test = tokenizer.texts_to_sequences(test_df['comment_limpio'].values)
+    X_test = tf.keras.preprocessing.sequence.pad_sequences(X_test, maxlen=100)
 
-    # Predicciones
-    y_pred_prob = model.predict(X_test)
-    y_pred = np.argmax(y_pred_prob, axis=1)
+    # Obtener las etiquetas de los datos de prueba
+    y_test = test_df['sentimiento'].astype('float32')
 
-    # Métricas de evaluación
-    report = classification_report(y_test, y_pred, output_dict=True)
-    accuracy = report['accuracy']
-    precision = report['weighted avg']['precision']
-    recall = report['weighted avg']['recall']
-    f1_score = report['weighted avg']['f1-score']
-    
-    # Matriz de confusión
-    conf_matrix = confusion_matrix(y_test, y_pred)
+    # Realizar predicciones
+    y_pred = model.predict(X_test)
+    y_pred_classes = np.argmax(y_pred, axis=1)
 
-    # Mostrar métricas
-    print(f"Accuracy: {accuracy}")
-    print(f"Precision: {precision}")
-    print(f"Recall: {recall}")
-    print(f"F1 Score: {f1_score}")
+    # Generar la matriz de confusión y el informe de clasificación
+    cm = confusion_matrix(y_test, y_pred_classes)
+    cr = classification_report(y_test, y_pred_classes, target_names=['alegría', 'enojo', 'tristeza', 'satisfacción', 'insatisfacción'])
 
-    # Generar gráficos
-    fig, ax = plt.subplots(1, 2, figsize=(14, 6))
+    print("Confusion Matrix:")
+    print(cm)
+    print("\nClassification Report:")
+    print(cr)
 
-    # Matriz de confusión
-    sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='viridis', ax=ax[0])
-    ax[0].set_title('Confusion Matrix')
-    ax[0].set_xlabel('Predicted')
-    ax[0].set_ylabel('True')
-
-    # Gráfico de métricas
-    metrics_df = pd.DataFrame(report).transpose()
-    metrics_df[['precision', 'recall', 'f1-score']].iloc[:-1].plot(kind='bar', ax=ax[1])
-    ax[1].set_title('Classification Report')
-    ax[1].set_ylim(0, 1)
-    plt.tight_layout()
+    # Visualizar la matriz de confusión
+    plt.figure(figsize=(10, 7))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['alegría', 'enojo', 'tristeza', 'satisfacción', 'insatisfacción'], yticklabels=['alegría', 'enojo', 'tristeza', 'satisfacción', 'insatisfacción'])
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    plt.title('Confusion Matrix')
     plt.show()
 
-    return accuracy, precision, recall, f1_score
+    return cr, cm
