@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+from collections import Counter
 
 def generar_visualizaciones_completas(df, y_test, y_pred_classes, etiquetas, cm):
     # Mapeo de los sentimientos para etiquetas comprensibles
@@ -24,6 +25,14 @@ def generar_visualizaciones_completas(df, y_test, y_pred_classes, etiquetas, cm)
     axes[0, 1].set_xlabel('Fecha')
     axes[0, 1].set_ylabel('Número de Comentarios')
 
+    # Palabras más frecuentes
+    all_words = [word for tokens in df['tokens'] for word in tokens]
+    word_freq = Counter(all_words)
+    common_words = word_freq.most_common(10)
+    words, counts = zip(*common_words)
+    axes[0, 2].pie(counts, labels=words, autopct='%1.1f%%', startangle=140, colors=sns.color_palette('pastel')[0:10])
+    axes[0, 2].set_title('Palabras Más Frecuentes')
+
     # Análisis de temas y aspectos
     if 'aspecto' in df.columns:
         sns.countplot(x='aspecto', data=df, palette='coolwarm', ax=axes[1, 0])
@@ -31,7 +40,7 @@ def generar_visualizaciones_completas(df, y_test, y_pred_classes, etiquetas, cm)
         axes[1, 0].set_xlabel('Aspectos')
         axes[1, 0].set_ylabel('Conteo')
 
-    # Nuevo gráfico de distribución de opiniones por año
+    # Distribución de Opiniones por Año
     df['year'] = df['timestamp'].dt.year
     df_year_sentiment = df.groupby(['year', 'sentimiento_label']).size().unstack().fillna(0)
     df_year_sentiment.plot(kind='bar', stacked=True, ax=axes[1, 1])
