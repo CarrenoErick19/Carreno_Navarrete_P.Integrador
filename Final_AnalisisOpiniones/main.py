@@ -7,7 +7,7 @@ from data.data_cleaning import limpiar_datos, vectorizar_texto, mostrar_resultad
 from analysis.analisis_sentimiento import analizar_sentimientos
 from rnn_model.definir_modelo import definir_modelo_rnn
 from rnn_model.evaluar_modelo import evaluar_modelo_rnn
-from analysis.visualization import generar_visualizaciones
+from analysis.visualization import generar_visualizaciones, generar_visualizaciones_completas
 from rnn_model.entrenar_modelo import entrenar_y_guardar_modelo_rnn
 
 # Cargar datos
@@ -107,5 +107,5 @@ cr, cm = evaluar_modelo_rnn(model, test_df, tokenizer)
 print("Generando visualizaciones...")
 y_pred = model.predict(X_test)
 y_pred_classes = np.argmax(y_pred, axis=1)
-generar_visualizaciones(df, y_test, y_pred_classes, ['alegría', 'enojo', 'tristeza', 'satisfacción', 'insatisfacción'])
+generar_visualizaciones_completas(df, y_test, y_pred_classes, ['alegría', 'enojo', 'tristeza', 'satisfacción', 'insatisfacción'], cm)
 print("Visualizaciones generadas.")
