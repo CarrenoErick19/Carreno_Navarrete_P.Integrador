@@ -25,12 +25,4 @@ def evaluar_modelo_rnn(model, test_df, tokenizer):
     print("\nClassification Report:")
     print(cr)
 
-    # Visualizar la matriz de confusión
-    plt.figure(figsize=(10, 7))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['alegría', 'enojo', 'tristeza', 'satisfacción', 'insatisfacción'], yticklabels=['alegría', 'enojo', 'tristeza', 'satisfacción', 'insatisfacción'])
-    plt.xlabel('Predicted')
-    plt.ylabel('True')
-    plt.title('Confusion Matrix')
-    plt.show()
-
     return cr, cm

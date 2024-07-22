@@ -7,7 +7,7 @@ from data.data_cleaning import limpiar_datos, vectorizar_texto, mostrar_resultad
 from analysis.analisis_sentimiento import analizar_sentimientos
 from rnn_model.definir_modelo import definir_modelo_rnn
 from rnn_model.evaluar_modelo import evaluar_modelo_rnn
-from analysis.visualization import generar_visualizaciones, generar_visualizaciones_completas
+from analysis.visualization import generar_visualizaciones_completas
 from rnn_model.entrenar_modelo import entrenar_y_guardar_modelo_rnn
 
 # Cargar datos
@@ -97,13 +97,13 @@ model = definir_modelo_rnn(vocab_size=5000, max_len=max_len)
 
 # Entrenar el modelo, guardar el modelo y el tokenizer
 print("Entrenando el modelo...")
-entrenar_y_guardar_modelo_rnn(model, X_train, y_train, X_val, y_val, tokenizer, epochs=100, batch_size=128)
+entrenar_y_guardar_modelo_rnn(model, X_train, y_train, X_val, y_val, tokenizer, epochs=100, batch_size=256)
 
 # Evaluar el modelo
 print("Evaluando el modelo...")
 cr, cm = evaluar_modelo_rnn(model, test_df, tokenizer)
 
-# Generar visualizaciones
+# Generar visualizaciones completas
 print("Generando visualizaciones...")
 y_pred = model.predict(X_test)
 y_pred_classes = np.argmax(y_pred, axis=1)
