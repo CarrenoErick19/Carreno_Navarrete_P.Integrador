@@ -97,7 +97,7 @@ model = definir_modelo_rnn(vocab_size=5000, max_len=max_len)
 
 # Entrenar el modelo, guardar el modelo y el tokenizer
 print("Entrenando el modelo...")
-entrenar_y_guardar_modelo_rnn(model, X_train, y_train, X_val, y_val, tokenizer, epochs=100, batch_size=128)
+entrenar_y_guardar_modelo_rnn(model, X_train, y_train, X_val, y_val, tokenizer, epochs=500, batch_size=256)
 
 # Evaluar el modelo
 print("Evaluando el modelo...")
