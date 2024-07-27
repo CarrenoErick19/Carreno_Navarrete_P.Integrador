@@ -2,3 +2,4 @@
 Selenium_Tweets/main.py
 JUPYTER NOTEBOOK/modelo_sentimientos.h5
 JUPYTER NOTEBOOK/modelo_lstm.keras
+JUPYTER NOTEBOOK/modelo_lstm_mejorado.h5
