@@ -24,3 +24,4 @@ CARREÑO_NAVARRETE_RNN/Mostrado 29 julio/lexico_afinn.csv
 CARREÑO_NAVARRETE_RNN/Mostrado 29 julio/reduced_cc.es.300.vec
 CARREÑO_NAVARRETE_RNN/Mostrado 29 julio/word_dict.json
 CARREÑO_NAVARRETE_RNN/Mostrado 29 julio/tokenizer.pickle
+CARREÑO_NAVARRETE_RNN/Mostrado 29 julio/conjunto_entrenamiento_balanceado.npz
