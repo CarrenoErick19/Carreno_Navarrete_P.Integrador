@@ -20,3 +20,7 @@ Mostrado 29 julio/.ipynb_checkpoints/rnn_posts_carreño_navarrete-checkpoint.ipy
 CARREÑO_NAVARRETE_RNN/Mostrado 29 julio/modelo_lstm_avanzado2.keras
 CARREÑO_NAVARRETE_RNN/Mostrado 29 julio/datos_procesados.pkl
 CARREÑO_NAVARRETE_RNN/Mostrado 29 julio/modelo_lstm_avanzado.keras
+CARREÑO_NAVARRETE_RNN/Mostrado 29 julio/lexico_afinn.csv
+CARREÑO_NAVARRETE_RNN/Mostrado 29 julio/reduced_cc.es.300.vec
+CARREÑO_NAVARRETE_RNN/Mostrado 29 julio/word_dict.json
+CARREÑO_NAVARRETE_RNN/Mostrado 29 julio/tokenizer.pickle
